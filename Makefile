@@ -1,7 +1,7 @@
 ROOTDIR=$(realpath $(dir $(firstword $(MAKEFILE_LIST))))
 
 
-SRCDIR=${ROOTDIR}/kernelnb
+SRCDIR=${ROOTDIR}/weightedknn
 TESTDIR=${ROOTDIR}/tests
 COVDIR=${ROOTDIR}/htmlcov_p
 COVERAGERC=${ROOTDIR}/.coveragerc
