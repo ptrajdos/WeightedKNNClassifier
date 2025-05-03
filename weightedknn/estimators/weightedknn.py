@@ -85,7 +85,10 @@ class WeightedKNNClassifier(KNeighborsClassifier):
         if hasattr(self, "_fit_X_internal"):
             self._predict_lock = th.RLock()
 
-    def predict(self, X, weights=None):
+    def _predict(self, X, weights=None):
+        """
+        Predict the class labels for the input samples.
+        """
         self._check_fit()
         with self._predict_lock:
             if weights is None:
@@ -122,12 +125,19 @@ class WeightedKNNClassifier(KNeighborsClassifier):
                 f"weights must be of shape ({X.shape[0]}, {self.n_features_in_}) or "
                 f"({self.n_features_in_},), but got {weights.shape}."
             )
+        
+    def predict(self, X, weights=None):
+        return self._predict(X, weights=weights)
     
-    def predict_proba(self, X, weights=None):
+    def _predict_proba(self, X, weights=None):
+        """
+        Predict the class probabilities for the input samples.
+        """
         self._check_fit()
         with self._predict_lock:
             if weights is None:
                 return super().predict_proba(X)
+
             if weights.ndim == 1:
                 if len(weights) != self.n_features_in_:
                     raise ValueError(
@@ -149,7 +159,7 @@ class WeightedKNNClassifier(KNeighborsClassifier):
                         f"but got {weights.shape}."
                     )
                 predicted_proba = []
-                for w, x_idx in zip(weights, range(X.shape[0])):
+                for w,x_idx in zip(weights, range(X.shape[0])):
                     self._pred_weights = w
                     predicted_proba.append(super().predict_proba(w * X[x_idx:x_idx+1,:]))
                     
@@ -159,3 +169,6 @@ class WeightedKNNClassifier(KNeighborsClassifier):
                 f"weights must be of shape ({X.shape[0]}, {self.n_features_in_}) or "
                 f"({self.n_features_in_},), but got {weights.shape}."
             )
+    
+    def predict_proba(self, X, weights=None):
+        return self._predict_proba(X, weights=weights)
