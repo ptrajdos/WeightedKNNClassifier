@@ -264,6 +264,82 @@ class TestWeightedKNN(TestCase):
                 f"Not all sums close to one. For {clf_name}",
             )
 
+    def test_weighted_2D_iris_zeros(self):
+        X, y = load_iris(return_X_y=True)
+        weights = np.zeros((X.shape[0], X.shape[1]))
+
+        for clf_name, clf in self.get_estimators().items():
+            clf.fit(X, y)
+            y_pred = clf.predict(X, weights=weights)
+
+            probas = clf.predict_proba(X, weights=weights)
+            self.assertIsNotNone(probas, f"Probabilites are None. For {clf_name}")
+            self.assertFalse(
+                np.isnan(probas).any(),
+                f"NaNs in probability predictions. For {clf_name}",
+            )
+            self.assertFalse(
+                np.isinf(probas).any(),
+                f"Inf in probability predictions. For {clf_name}",
+            )
+            self.assertTrue(
+                probas.shape[0] == X.shape[0],
+                f"Different number of objects in prediction. For {clf_name}",
+            )
+            self.assertTrue(
+                probas.shape[1] == len(np.unique(y)),
+                f"Wrong number of classes in proba prediction. For {clf_name}",
+            )
+            self.assertTrue(
+                np.all(probas >= 0), f"Negative probabilities. For {clf_name}"
+            )
+            self.assertTrue(
+                np.all(probas <= 1), f"Probabilities bigger than one. For {clf_name}"
+            )
+            prob_sums = np.sum(probas, axis=1)
+            self.assertTrue(
+                np.allclose(prob_sums, np.asanyarray([1 for _ in range(X.shape[0])])),
+                f"Not all sums close to one. For {clf_name}",
+            )
+
+    def test_weighted_2D_iris_ones(self):
+        X, y = load_iris(return_X_y=True)
+        weights = np.ones((X.shape[0], X.shape[1]))
+
+        for clf_name, clf in self.get_estimators().items():
+            clf.fit(X, y)
+            y_pred = clf.predict(X, weights=weights)
+
+            probas = clf.predict_proba(X, weights=weights)
+            self.assertIsNotNone(probas, f"Probabilites are None. For {clf_name}")
+            self.assertFalse(
+                np.isnan(probas).any(),
+                f"NaNs in probability predictions. For {clf_name}",
+            )
+            self.assertFalse(
+                np.isinf(probas).any(),
+                f"Inf in probability predictions. For {clf_name}",
+            )
+            self.assertTrue(
+                probas.shape[0] == X.shape[0],
+                f"Different number of objects in prediction. For {clf_name}",
+            )
+            self.assertTrue(
+                probas.shape[1] == len(np.unique(y)),
+                f"Wrong number of classes in proba prediction. For {clf_name}",
+            )
+            self.assertTrue(
+                np.all(probas >= 0), f"Negative probabilities. For {clf_name}"
+            )
+            self.assertTrue(
+                np.all(probas <= 1), f"Probabilities bigger than one. For {clf_name}"
+            )
+            prob_sums = np.sum(probas, axis=1)
+            self.assertTrue(
+                np.allclose(prob_sums, np.asanyarray([1 for _ in range(X.shape[0])])),
+                f"Not all sums close to one. For {clf_name}",
+            )
+
     def test_wrong_weights(self):
         X, y = load_iris(return_X_y=True)
 
