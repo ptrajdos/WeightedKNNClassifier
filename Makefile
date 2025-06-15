@@ -38,7 +38,7 @@ clean:
 venv:
 	${PYTHON} -m venv ${VENV_SUBDIR}
 	${ACTIVATE}; ${PIP} install pip -U
-	${ACTIVATE}; ${PIP} install -e ${ROOTDIR} --prefer-binary --log ${INSTALL_LOG_FILE} -r ${REQ_FILE}
+	${ACTIVATE}; ${PIP} install -e ${ROOTDIR}[test] --prefer-binary --log ${INSTALL_LOG_FILE}
 
 test: venv
 	mkdir -p ${LOGDIR}  

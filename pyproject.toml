@@ -1,7 +1,55 @@
 [build-system]
-requires = ["setuptools>=42"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
-[test-system]
-requires = [ "pytest" ]  # PEP 508 specifications.
-test-backend = "pytest"
+# [test-system]
+# requires = [ "pytest" ]  # PEP 508 specifications.
+# test-backend = "pytest"
+
+[project]
+name = "weightedknn"
+dynamic = ["version", "readme"]
+dependencies = [
+    'numpy>=1.22.4',
+    'joblib',
+    'scikit-learn>=1.2.2',
+]
+requires-python = ">=3.9"
+authors = [
+  {name = "Pawel Trajdos", email = "pawel.trajdos@pwr.edu.pl"},
+]
+maintainers = [
+  {name = "Pawel Trajdos", email = "pawel.trajdos@pwr.edu.pl"}
+]
+description = "Weighted KNN Classifier"
+
+license = "BSD-3-Clause"
+license-files = ["LICEN[CS]E.*"]
+keywords = ["KNN"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python"
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "weightedknn.__version__"}  # any module attribute compatible with ast.literal_eval
+readme = {file = ["README.md"]}
+
+[project.urls]
+Repository = "https://github.com/ptrajdos/WeightedKNNClassifier.git"
+
+
+[project.optional-dependencies]
+test = [
+    'coverage==7.8.0',
+    'unittest-parallel==1.5.3',
+    'pandas>=2.0.0',
+    'pdoc3==0.11.1',
+    'pytest==8.3.5',
+    'pytest-cov==6.1.1',
+    'pytest-profiling==1.8.1',
+    'pytest-xdist==3.6.1',
+    'snakeviz==2.2.2',
+]
+[tool.setuptools]
+packages = { find = { include = ["weightedknn", "weightedknn.*"] } }
