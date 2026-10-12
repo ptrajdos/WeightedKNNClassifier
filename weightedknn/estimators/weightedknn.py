@@ -119,7 +119,7 @@ class WeightedKNNClassifier(KNeighborsClassifier):
                     self._pred_weights = w
                     predicted.append(super().predict(w * X[x_idx:x_idx+1,:]))
                     
-                return np.asanyarray(predicted)
+                return np.concatenate(predicted)
             
             raise ValueError(
                 f"weights must be of shape ({X.shape[0]}, {self.n_features_in_}) or "

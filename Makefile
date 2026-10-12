@@ -17,6 +17,8 @@ PDOC= pdoc3
 PYTHON=python
 PIP=pip
 PYTEST=pytest
+TOX=tox
+TOX_CORES= auto
 
 LOGDIR=${ROOTDIR}/testlogs
 LOGFILE=${LOGDIR}/`date +'%y-%m-%d_%H-%M-%S'`.log
@@ -30,10 +32,10 @@ else
 	ACTIVATE:=. ${VENV_SUBDIR}/bin/activate
 endif
 
-.PHONY: all clean test docs
+.PHONY: all clean test docs tox tox_parallel tox_list
 
 clean:
-	rm -rf ${VENV_SUBDIR}
+	rm -rf ${VENV_SUBDIR} ${ROOTDIR}/.tox
 
 venv:
 	${PYTHON} -m venv ${VENV_SUBDIR}
@@ -56,3 +58,19 @@ docs: venv
 profile: venv
 	
 	${ACTIVATE}; ${PYTEST} -n auto --cov-report=html --cov=${SRCDIR} --profile ${TESTDIR}
+
+# Run the Python x scikit-learn matrix defined in tox.ini.
+# Select a subset with e.g.: make tox TOX_ENVS=py311-sklearn19,py39-sklearn122
+TOX_ENVS=
+TOX_ENV_ARG=$(if ${TOX_ENVS},-e ${TOX_ENVS},)
+
+tox: venv
+	mkdir -p ${LOGDIR}
+	${ACTIVATE}; ${TOX} -c ${ROOTDIR}/tox.ini ${TOX_ENV_ARG} 2>&1 |tee -a ${LOGFILE}
+
+tox_parallel: venv
+	mkdir -p ${LOGDIR}
+	${ACTIVATE}; ${TOX} -c ${ROOTDIR}/tox.ini ${TOX_ENV_ARG} -p $(TOX_CORES) 2>&1 |tee -a ${LOGFILE}
+
+tox_list: venv
+	${ACTIVATE}; ${TOX} -c ${ROOTDIR}/tox.ini list

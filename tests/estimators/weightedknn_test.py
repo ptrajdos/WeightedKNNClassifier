@@ -264,6 +264,24 @@ class TestWeightedKNN(TestCase):
                 f"Not all sums close to one. For {clf_name}",
             )
 
+    def test_weighted_predict_shape(self):
+        X, y = load_iris(return_X_y=True)
+        weights_list = [
+            None,
+            np.random.random(X.shape[1]),
+            np.random.random((X.shape[0], X.shape[1])),
+        ]
+
+        for clf_name, clf in self.get_estimators().items():
+            clf.fit(X, y)
+            for weights in weights_list:
+                y_pred = clf.predict(X, weights=weights)
+                self.assertEqual(
+                    y_pred.shape,
+                    (X.shape[0],),
+                    f"Wrong shape of predictions. For {clf_name}",
+                )
+
     def test_weighted_2D_iris_zeros(self):
         X, y = load_iris(return_X_y=True)
         weights = np.zeros((X.shape[0], X.shape[1]))
